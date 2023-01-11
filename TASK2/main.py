@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import re
+from statistics import mode
 
 train_path = 'train.csv'
 test_path = 'test.csv'
@@ -101,11 +102,11 @@ plt.pie(pie_list2, labels = ['survived','dead'])
 plt.show()
 plt.close()
 
-
-
-
 train_df.drop(['PassengerId','Ticket','Name'],axis=1,inplace=True)
 print(train_df)
+
+#Nan analysis
+
 l1=[]
 d=dict()
 for y in train_df.columns:
@@ -121,7 +122,34 @@ for y in train_df.columns:
 for k, v in d.items():
     print(k, v)
 
+
 print(train_df)
+md=mode(train_df['Embarked'].tolist())
+lis=[]
+for x in train_df['Age']:
+  if str(x)=='nan':
+    pass
+  else:
+    lis.append(int(x))
+    print(x)
+
+
+
+
+print(lis)
+def Average(lst):
+  return round(sum(lst) / len(lst),3)
+
+
+avg=Average(lis)
+train_df['Embarked'].fillna(md,inplace=True)
+train_df['Age'].fillna(avg,inplace=True)
+print(train_df['Embarked'].tolist())
+print(train_df['Age'].tolist())
+
+
+
+#Adding features to the dataset
 l1.clear()
 l2.clear()
 l3.clear()
@@ -139,21 +167,40 @@ for x in l3:
 train_df.drop(['Parch','SibSp'],axis=1,inplace=True)
 train_df['Family_members']=l3
 
+#Scaling and Normalization
 print(train_df)
+min1=float(min(train_df['Age'].tolist()))
+max1=float(max(train_df['Age'].tolist()))
+
+min2=float(min(train_df['Fare'].tolist()))
+max2=float(max(train_df['Fare'].tolist()))
+
+min3=float(min(train_df['Family_members'].tolist()))
+max3=float(max(train_df['Family_members'].tolist()))
 
 
 
 
+l1=[]
+l1.clear()
+for i in train_df['Age']:
+  l1.append((i-min1)/(max1-min1))
+train_df['Age']=l1
+print(train_df['Age'])
 
+l1.clear()
+for i in train_df['Fare']:
+  l1.append((i-min2)/(max2-min2))
+train_df['Fare']=l1
+print(train_df['Fare'])
+print(train_df['Family_members'])
+l1.clear()
+for i in train_df['Family_members']:
+  l1.append((i-min2)/(max2-min2))
+train_df['Family_members']=l1
+print(train_df['Family_members'])
 
-
-
-
-
-
-
-
-
-
-
+#one hot encoding
+one=pd.get_dummies(data=train_df,columns=['Pclass','Sex','Title','Embarked'])
+print(one)
 
